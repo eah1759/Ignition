@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package javamidi;
+package ignition;
 
 import java.util.List;
 import javafx.application.Application;
@@ -64,22 +64,15 @@ public class JavaMIDI extends Application {
         inputCB.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
+                MidiDevice.Info devInfo;
                 try {
-                    for (MidiDevice dev : openDevices) {
-                        MidiDevice.Info closeInfo = (MidiDevice.Info) (inputCB.getItems().get((Integer) number));
-                        if (dev == closeInfo) {
-                            dev.close();
-                        }
-                    }
+                    devInfo = (MidiDevice.Info) (inputCB.getItems().get((Integer) number));
+                    ActiveDevices.closeDevice(devInfo);
+                } catch (ArrayIndexOutOfBoundsException e) {
                     
-                    MidiDevice.Info devInfo = (MidiDevice.Info) (inputCB.getItems().get((Integer) number2));
-                    MidiDevice device = MidiSystem.getMidiDevice(devInfo);
-                    device.open();
-                    openDevices.add(device);
-                    System.out.println("Device opened!");
-                } catch (MidiUnavailableException e) {
-                    System.out.println("Device already in use!");
                 }
+                devInfo = (MidiDevice.Info) (inputCB.getItems().get((Integer) number2));
+                ActiveDevices.addInputDevice(devInfo);
             }
         });
 
@@ -112,9 +105,7 @@ public class JavaMIDI extends Application {
             @Override
             public void run()
             {
-                for (MidiDevice dev : openDevices) {
-                    dev.close();
-                }
+               ActiveDevices.closeAllDevices();
             }
         });
     }

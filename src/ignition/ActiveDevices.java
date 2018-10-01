@@ -24,7 +24,7 @@ public class ActiveDevices {
             MidiDevice device = MidiSystem.getMidiDevice(deviceInfo);
             device.open();
             midiInputDevices.add(device);
-            System.out.println("Device opened!");
+            System.out.println("Opened " + deviceInfo);
         } catch (MidiUnavailableException e) {
             System.out.println("Device already in use!");
         }
@@ -35,7 +35,7 @@ public class ActiveDevices {
             MidiDevice device = MidiSystem.getMidiDevice(deviceInfo);
             device.open();
             midiOutputDevices.add(device);
-            System.out.println("Device opened!");
+            System.out.println("Opened " + deviceInfo);
         } catch (MidiUnavailableException e) {
             System.out.println("Device already in use!");
         }
@@ -43,10 +43,20 @@ public class ActiveDevices {
     
     static void closeDevice(MidiDevice.Info deviceInfo) {
         for (MidiDevice dev : midiInputDevices ) {
-            if (deviceInfo == dev.getDeviceInfo()) dev.close();
+            if (deviceInfo == dev.getDeviceInfo()) {
+                dev.close();
+                midiInputDevices.remove(dev);
+                System.out.println("Closed " + deviceInfo);
+                return;
+            }
         }
         for (MidiDevice dev : midiOutputDevices ) {
-            if (deviceInfo == dev.getDeviceInfo()) dev.close();
+            if (deviceInfo == dev.getDeviceInfo()) {
+                dev.close();
+                midiOutputDevices.remove(dev);
+                System.out.println("Closed " + deviceInfo);
+                return;
+            }
         }
     }
     
